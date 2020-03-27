@@ -27,7 +27,7 @@ import logging
 import os
 import pickle
 import random
-import regex as re
+import re
 import shutil
 
 import numpy as np
@@ -47,7 +47,7 @@ from fastai.basics import *
 
 from run_generation import sample_sequence
 
-from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup, get_constant_schedule, get_cosine_schedule_with_warmup,
+from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup, get_constant_schedule_with_warmup, get_cosine_schedule_with_warmup,
                                   BertConfig, BertForMaskedLM, BertTokenizer,
                                   GPT2Config, GPT2LMHeadModel, GPT2Tokenizer,
                                   OpenAIGPTConfig, OpenAIGPTLMHeadModel, OpenAIGPTTokenizer,
@@ -284,9 +284,9 @@ def train(args, train_dataset, model, tokenizer):
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
     warmup_steps = args.warmup_samples // args.train_batch_size
     if args.lr_decay:
-        scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps=warmup_steps, t_total=t_total)
+        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=t_total)
     else:
-        scheduler = get_constant_schedule(optimizer, warmup_steps=warmup_steps)
+        scheduler = get_constant_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps)
 
     if args.fp16:
         try:
